@@ -27,8 +27,26 @@ const registrationController = async (req, res, next) => {
   }
 };
 
-const loginController = async (req, res) => {
-  await login();
+const loginController = async (req, res, next) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    const token = await login(email, password);
+    res.json({
+      Status: '200 OK',
+      'Content-Type': 'application/json',
+      ResponseBody: {
+        token,
+        user: {
+          email,
+          subscription: user.subscription,
+        },
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 module.exports = {

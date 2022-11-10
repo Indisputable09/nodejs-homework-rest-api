@@ -45,6 +45,12 @@ class NotAuthorizedError extends CustomError {
   constructor(message) {
     super(message);
     this.status = 401;
+    this.message = {
+      Status: '401 Unauthorized',
+      ResponseBody: {
+        message,
+      },
+    };
   }
 }
 

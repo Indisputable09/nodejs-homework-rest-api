@@ -1,42 +1,28 @@
-const { User } = require('../db/userModel');
 const bcrypt = require('bcrypt');
-// const { NotAuthorizedError } = require('../helpers/errors');
+const jwt = require('jsonwebtoken');
+const { NotAuthorizedError } = require('../helpers/errors');
+const { User } = require('../db/userModel');
 
 const registration = async (email, password) => {
-  // const existingUser = await User.findOne({ email });
-  // if (existingUser) {
-  //   return {
-  //     Status: '409 Conflict',
-  //     'Content-Type': 'application/json',
-  //     ResponseBody: {
-  //       message: 'Email in use',
-  //     },
-  //   };
-  // }
   const user = new User({ email, password: await bcrypt.hash(password, 10) });
   await user.save();
-  // try {
-  //   const newUser = new User({
-  //     email,
-  //     password: await bcrypt.hash(password, 10),
-  //   });
-  //   // newUser.setPassword(password);
-  //   await newUser.save();
-  //   res.status(201).json({
-  //     status: 'success',
-  //     code: 201,
-  //     data: {
-  //       message: 'Registration successful',
-  //     },
-  //   });
-  // } catch (error) {
-  //   next(error);
-  // }
-
-  // await user.save();
 };
 
-const login = async userId => {};
+const login = async (email, password) => {
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    throw new NotAuthorizedError('Email or password is wrong');
+  }
+
+  if (!(await bcrypt.compare(password, user.password))) {
+    throw new NotAuthorizedError('Email or password is wrong');
+  }
+
+  const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
+
+  return token;
+};
 
 module.exports = {
   registration,

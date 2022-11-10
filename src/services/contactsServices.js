@@ -22,9 +22,7 @@ const changeContactById = async ({
   phone,
   favorite,
 }) => {
-  await Contact.findByIdAndUpdate(contactId, {
-    $set: { name, email, phone, favorite },
-  });
+  await Contact.findByIdAndUpdate(contactId, { name, email, phone, favorite });
 };
 
 const removeContactById = async contactId => {
@@ -35,9 +33,7 @@ const updateStatusContact = async (
   contactId,
   { name, email, phone, favorite }
 ) => {
-  await Contact.findByIdAndUpdate(contactId, {
-    $set: { name, email, phone, favorite },
-  });
+  await Contact.findByIdAndUpdate(contactId, { name, email, phone, favorite });
 };
 
 module.exports = {
