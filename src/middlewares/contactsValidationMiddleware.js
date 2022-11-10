@@ -3,8 +3,9 @@ const { ValidationError } = require('../helpers/errors');
 
 const handleValidationError = (validationResult, res, next) => {
   if (validationResult.error) {
-    next(new ValidationError(JSON.stringify(validationResult.error.details)));
-    return res.status(400).json({ message: validationResult.error.details });
+    next(new ValidationError(validationResult.error.details[0].message));
+    // next(new ValidationError(JSON.stringify(validationResult.error.details)));
+    // return res.status(400).json({ message: validationResult.error.details });
   }
 };
 
@@ -25,7 +26,8 @@ module.exports = {
         .max(30)
         .pattern(/^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$/)
         .required(),
-      favorite: Joi.boolean(),
+      subscription: Joi.string(),
+      token: Joi.string(),
     });
 
     const validation = schema.validate(req.body);

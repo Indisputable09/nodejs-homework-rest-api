@@ -1,4 +1,8 @@
 const {
+  WrongParametersError,
+  WrongParametersForContactByIdError,
+} = require('../helpers/errors');
+const {
   getContacts,
   getContactById,
   addContact,
@@ -17,7 +21,7 @@ const getContactByIdController = async (req, res) => {
   const chosenContact = await getContactById(contactId);
 
   if (!chosenContact) {
-    return res.status(404).json({ message: 'Not found' });
+    throw new WrongParametersForContactByIdError('Not found');
   }
   res.json({
     chosenContact,
@@ -59,7 +63,7 @@ const updateStatusContactController = async (req, res) => {
   const { favorite } = req.body;
   const { contactId } = req.params;
   if (!favorite) {
-    res.status(400).json({ message: 'missing field favorite' });
+    throw new WrongParametersError('Missing field favorite');
   }
   await updateStatusContact(contactId, req.body);
   res.json({

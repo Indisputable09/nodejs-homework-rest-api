@@ -2,7 +2,7 @@ const express = require('express');
 const {
   addContactValidation,
   updateContactValidation,
-} = require('../../middlewares/validationMiddleware');
+} = require('../../middlewares/contactsValidationMiddleware');
 const {
   getContactsController,
   getContactByIdController,
