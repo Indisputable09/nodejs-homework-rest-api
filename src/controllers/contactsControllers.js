@@ -13,7 +13,7 @@ const {
 
 const getContactsController = async (req, res) => {
   const { _id } = req.user;
-  const contacts = await getContacts(_id);
+  const contacts = await getContacts(_id, req.query);
   res.json({ contacts, status: 'success', status_code: 200 });
 };
 

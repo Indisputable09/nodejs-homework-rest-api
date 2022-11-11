@@ -1,7 +1,11 @@
 const { Contact } = require('../db/contactModel');
 
-const getContacts = async owner => {
-  const contacts = await Contact.find({ owner });
+const getContacts = async (owner, { page, perPage }) => {
+  const skip = (page - 1) * perPage;
+  const contacts = await Contact.find({ owner }, { __v: 0 })
+    .skip(skip)
+    .limit(perPage)
+    .sort({ favorite: -1 });
   return contacts;
 };
 

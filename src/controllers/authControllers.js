@@ -1,10 +1,11 @@
 const { User } = require('../db/userModel');
-const { ConflictError } = require('../helpers/errors');
+const { ConflictError, WrongParametersError } = require('../helpers/errors');
 const {
   registration,
   login,
   logout,
   currentUser,
+  changeSubscription,
 } = require('../services/authServices');
 
 const registrationController = async (req, res, next) => {
@@ -55,11 +56,15 @@ const loginController = async (req, res, next) => {
 };
 
 const logoutController = async (req, res, next) => {
-  await logout(req.user);
+  try {
+    await logout(req.user);
 
-  res.json({
-    Status: '204 No Content',
-  });
+    res.json({
+      Status: '204 No Content',
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 const currentUserController = async (req, res) => {
@@ -75,9 +80,29 @@ const currentUserController = async (req, res) => {
   });
 };
 
+const updateSubscriptionController = async (req, res, next) => {
+  const { subscription } = req.body;
+  const availableSubscriptions = ['starter', 'pro', 'business'];
+  if (!availableSubscriptions.includes(subscription)) {
+    next(new WrongParametersError('Wrong type of subscription'));
+  }
+  try {
+    await changeSubscription(req.user._id, subscription);
+    res.json({
+      status: 'success',
+      code: 200,
+      subscription,
+      message: 'Subscription has been successfully changed',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   registrationController,
   loginController,
   logoutController,
   currentUserController,
+  updateSubscriptionController,
 };
