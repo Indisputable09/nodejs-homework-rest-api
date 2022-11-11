@@ -12,7 +12,8 @@ const {
 } = require('../services/contactsServices');
 
 const getContactsController = async (req, res) => {
-  const contacts = await getContacts();
+  const { _id } = req.user;
+  const contacts = await getContacts(_id);
   res.json({ contacts, status: 'success', status_code: 200 });
 };
 
@@ -41,8 +42,9 @@ const removeContactController = async (req, res) => {
 };
 
 const addContactController = async (req, res) => {
+  const { _id } = req.user;
   const { name, email, phone, favorite } = req.body;
-  await addContact({ name, email, phone, favorite });
+  await addContact({ name, email, phone, favorite }, _id);
 
   res.json({ status: 'success', status_code: 201, message: 'contact created' });
 };

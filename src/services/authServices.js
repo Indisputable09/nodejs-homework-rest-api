@@ -24,7 +24,19 @@ const login = async (email, password) => {
   return token;
 };
 
+const logout = async user => {
+  user.token = null;
+};
+
+const currentUser = async userId => {
+  const user = await User.findById(userId);
+  const { email, subscription } = user;
+  return { email, subscription };
+};
+
 module.exports = {
   registration,
   login,
+  logout,
+  currentUser,
 };

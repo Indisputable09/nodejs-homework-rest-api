@@ -1,11 +1,11 @@
 const Joi = require('joi');
 const { ValidationError } = require('../helpers/errors');
 
-const handleValidationError = (validationResult, res, next) => {
-  if (validationResult.error) {
-    next(new ValidationError(validationResult.error.details[0].message));
-  }
-};
+// const handleValidationError = (validationResult, res, next) => {
+//   if (validationResult.error) {
+//     next(new ValidationError(validationResult.error.details[0].message));
+//   }
+// };
 
 module.exports = {
   addContactValidation: (req, res, next) => {
@@ -29,7 +29,10 @@ module.exports = {
 
     const validation = schema.validate(req.body);
 
-    handleValidationError(validation, res, next);
+    if (validation.error) {
+      //   handleValidationError(validation, res, next);
+      next(new ValidationError(validation.error.details[0].message));
+    }
     next();
   },
   updateContactValidation: (req, res, next) => {
@@ -53,7 +56,10 @@ module.exports = {
 
     const validation = schema.validate(req.body);
 
-    handleValidationError(validation, res);
+    if (validation.error) {
+      //   handleValidationError(validation, res, next);
+      next(new ValidationError(validation.error.details[0].message));
+    }
     next();
   },
 };
