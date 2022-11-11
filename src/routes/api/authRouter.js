@@ -16,17 +16,13 @@ const {
 const router = express.Router();
 
 router.post(
-  '/users/register',
+  '/register',
   registerUserValidation,
   asyncWrapper(registrationController)
 );
-router.post('/users/login', loginUserValidation, asyncWrapper(loginController));
-router.post('/users/logout', authMiddleware, asyncWrapper(logoutController));
-router.get(
-  '/users/current',
-  authMiddleware,
-  asyncWrapper(currentUserController)
-);
+router.post('/login', loginUserValidation, asyncWrapper(loginController));
+router.post('/logout', authMiddleware, asyncWrapper(logoutController));
+router.get('/current', authMiddleware, asyncWrapper(currentUserController));
 router.patch('/', authMiddleware, asyncWrapper(updateSubscriptionController));
 
 module.exports = router;
