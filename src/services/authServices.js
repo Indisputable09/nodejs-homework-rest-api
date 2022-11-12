@@ -19,7 +19,9 @@ const login = async (email, password) => {
     throw new NotAuthorizedError('Email or password is wrong');
   }
 
-  const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
+  const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
+    expiresIn: '1h',
+  });
 
   return token;
 };

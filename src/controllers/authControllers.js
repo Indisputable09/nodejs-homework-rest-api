@@ -8,7 +8,7 @@ const {
   changeSubscription,
 } = require('../services/authServices');
 
-const registrationController = async (req, res, next) => {
+const registrationController = async (req, res) => {
   const { email, password } = req.body;
   const existingUser = await User.findOne({ email });
 
@@ -16,61 +16,49 @@ const registrationController = async (req, res, next) => {
     throw new ConflictError();
   }
 
-  try {
-    await registration(email, password);
-    res.json({
-      Status: '201 Created',
-      'Content-Type': 'application/json',
-      ResponseBody: {
-        user: {
-          email,
-          subscription: 'starter',
-        },
+  await registration(email, password);
+  res.status(201).json({
+    Status: '201 Created',
+    'Content-Type': 'application/json',
+    ResponseBody: {
+      user: {
+        email,
+        subscription: 'starter',
       },
-    });
-  } catch (error) {
-    next(error);
-  }
+    },
+  });
 };
 
-const loginController = async (req, res, next) => {
+const loginController = async (req, res) => {
   const { email, password } = req.body;
 
-  try {
-    const user = await User.findOne({ email });
-    const token = await login(email, password);
-    res.json({
-      Status: '200 OK',
-      'Content-Type': 'application/json',
-      ResponseBody: {
-        token,
-        user: {
-          email,
-          subscription: user.subscription,
-        },
+  const user = await User.findOne({ email });
+  const token = await login(email, password);
+  res.status(200).json({
+    Status: '200 OK',
+    'Content-Type': 'application/json',
+    ResponseBody: {
+      token,
+      user: {
+        email,
+        subscription: user.subscription,
       },
-    });
-  } catch (error) {
-    next(error);
-  }
+    },
+  });
 };
 
-const logoutController = async (req, res, next) => {
-  try {
-    await logout(req.user);
+const logoutController = async (req, res) => {
+  await logout(req.user);
 
-    res.json({
-      Status: '204 No Content',
-    });
-  } catch (error) {
-    next(error);
-  }
+  res.status(204).json({
+    Status: '204 No Content',
+  });
 };
 
 const currentUserController = async (req, res) => {
   const { email, subscription } = await currentUser(req.user._id);
 
-  res.json({
+  res.status(200).json({
     Status: '200 OK',
     'Content-Type': 'application/json',
     ResponseBody: {
@@ -80,23 +68,19 @@ const currentUserController = async (req, res) => {
   });
 };
 
-const updateSubscriptionController = async (req, res, next) => {
+const updateSubscriptionController = async (req, res) => {
   const { subscription } = req.body;
   const availableSubscriptions = ['starter', 'pro', 'business'];
   if (!availableSubscriptions.includes(subscription)) {
-    next(new WrongParametersError('Wrong type of subscription'));
+    throw new WrongParametersError('Wrong type of subscription');
   }
-  try {
-    await changeSubscription(req.user._id, subscription);
-    res.json({
-      status: 'success',
-      code: 200,
-      subscription,
-      message: 'Subscription has been successfully changed',
-    });
-  } catch (error) {
-    next(error);
-  }
+  await changeSubscription(req.user._id, subscription);
+  res.json({
+    status: 'success',
+    status_code: 200,
+    subscription,
+    message: 'Subscription has been successfully changed',
+  });
 };
 
 module.exports = {
