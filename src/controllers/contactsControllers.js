@@ -1,4 +1,8 @@
 const {
+  WrongParametersError,
+  WrongParametersForContactByIdError,
+} = require('../helpers/errors');
+const {
   getContacts,
   getContactById,
   addContact,
@@ -8,7 +12,8 @@ const {
 } = require('../services/contactsServices');
 
 const getContactsController = async (req, res) => {
-  const contacts = await getContacts();
+  const { _id } = req.user;
+  const contacts = await getContacts(_id, req.query);
   res.json({ contacts, status: 'success', status_code: 200 });
 };
 
@@ -17,7 +22,7 @@ const getContactByIdController = async (req, res) => {
   const chosenContact = await getContactById(contactId);
 
   if (!chosenContact) {
-    return res.status(404).json({ message: 'Not found' });
+    throw new WrongParametersForContactByIdError('Not found');
   }
   res.json({
     chosenContact,
@@ -37,8 +42,9 @@ const removeContactController = async (req, res) => {
 };
 
 const addContactController = async (req, res) => {
+  const { _id } = req.user;
   const { name, email, phone, favorite } = req.body;
-  await addContact({ name, email, phone, favorite });
+  await addContact({ name, email, phone, favorite }, _id);
 
   res.json({ status: 'success', status_code: 201, message: 'contact created' });
 };
@@ -59,7 +65,7 @@ const updateStatusContactController = async (req, res) => {
   const { favorite } = req.body;
   const { contactId } = req.params;
   if (!favorite) {
-    res.status(400).json({ message: 'missing field favorite' });
+    throw new WrongParametersError('Missing field favorite');
   }
   await updateStatusContact(contactId, req.body);
   res.json({
