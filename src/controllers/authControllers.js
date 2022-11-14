@@ -14,7 +14,7 @@ const registrationController = async (req, res) => {
   const existingUser = await User.findOne({ email });
 
   if (existingUser) {
-    throw new ConflictError();
+    throw new ConflictError(409);
   }
 
   await registration(email, password);
@@ -35,7 +35,7 @@ const loginController = async (req, res) => {
 
   const user = await User.findOne({ email });
   const token = await login(email, password);
-  res.status(200).json({
+  return res.status(200).json({
     Status: '200 OK',
     'Content-Type': 'application/json',
     ResponseBody: {

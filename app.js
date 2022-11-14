@@ -5,6 +5,7 @@ require('dotenv').config();
 
 const contactsRouter = require('./src/routes/api/contactsRouter');
 const authRouter = require('./src/routes/api/authRouter');
+const { errorHandler } = require('./src/helpers/apiHelpers');
 
 const app = express();
 
@@ -23,7 +24,7 @@ app.use((req, res) => {
 });
 
 app.use((err, req, res, next) => {
-  res.status(500).json({ message: err.message });
+  errorHandler(err, req, res, next);
 });
 
 module.exports = app;
