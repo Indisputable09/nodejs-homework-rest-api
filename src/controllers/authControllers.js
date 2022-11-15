@@ -6,6 +6,7 @@ const {
   logout,
   currentUser,
   changeSubscription,
+  changeAvatar,
 } = require('../services/authServices');
 
 const registrationController = async (req, res) => {
@@ -13,7 +14,7 @@ const registrationController = async (req, res) => {
   const existingUser = await User.findOne({ email });
 
   if (existingUser) {
-    throw new ConflictError();
+    throw new ConflictError(409);
   }
 
   await registration(email, password);
@@ -34,7 +35,7 @@ const loginController = async (req, res) => {
 
   const user = await User.findOne({ email });
   const token = await login(email, password);
-  res.status(200).json({
+  return res.status(200).json({
     Status: '200 OK',
     'Content-Type': 'application/json',
     ResponseBody: {
@@ -83,10 +84,24 @@ const updateSubscriptionController = async (req, res) => {
   });
 };
 
+const uploadImageController = async (req, res) => {
+  const { path, filename } = req.file;
+  const { _id } = req.user;
+  const avatarURL = await changeAvatar(path, filename, _id);
+  res.status(200).json({
+    Status: '200 OK',
+    'Content-Type': 'application/json',
+    ResponseBody: {
+      avatarURL,
+    },
+  });
+};
+
 module.exports = {
   registrationController,
   loginController,
   logoutController,
   currentUserController,
   updateSubscriptionController,
+  uploadImageController,
 };

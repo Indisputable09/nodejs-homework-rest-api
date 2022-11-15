@@ -1,13 +1,6 @@
 const Joi = require('joi');
 const { ValidationError } = require('../helpers/errors');
 
-// const handleValidationError = (validationResult, res, next) => {
-//   if (validationResult.error) {
-//     next(new ValidationError(validationResult.error.details[0].message));
-//     // throw new ValidationError(validationResult.error.details[0].message);
-//   }
-// };
-
 module.exports = {
   registerUserValidation: (req, res, next) => {
     const schema = Joi.object({
@@ -25,7 +18,6 @@ module.exports = {
     const validation = schema.validate(req.body);
 
     if (validation.error) {
-      //   handleValidationError(validation, res, next);
       next(new ValidationError(validation.error.details[0].message));
     }
     next();
@@ -44,7 +36,6 @@ module.exports = {
     const validation = schema.validate(req.body);
 
     if (validation.error) {
-      //   handleValidationError(validation, res, next);
       next(new ValidationError(validation.error.details[0].message));
     }
 
